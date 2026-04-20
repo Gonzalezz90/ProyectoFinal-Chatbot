@@ -1,0 +1,497 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SICOS Chat</title>
+
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 🔥 CENTRA verticalmente */
+    min-height: 100vh;
+    font-family: Arial;
+    background:linear-gradient(135deg,#0d6efd,#0a58ca);
+}
+#flujo {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 420px;
+    height: 550px;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.header {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.chat {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background: #f4f6f9;
+}
+
+/* 🔥 IMPORTANTE: elimina espacio fantasma */
+.chat::after {
+    content: none;
+}
+
+.msg {
+    margin: 6px 0;
+    padding: 10px 14px;
+    border-radius: 15px;
+    max-width: 75%;
+    font-size: 14px;
+}
+
+.cliente { 
+    background: #0d6efd; 
+    color: white; 
+    align-self: flex-end; 
+}
+
+.empleado { 
+    background: #e4f8e7; 
+    align-self: flex-start; 
+}
+
+.sistema { 
+    background: #e9ecef; 
+    align-self: center; 
+}
+
+.input-area {
+    padding: 10px;
+    border-top: 1px solid #eee;
+    background: white;
+}
+
+.input-row {
+    display: flex;
+    gap: 5px;
+}
+
+.input-text {
+    flex: 1;
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.btn-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-send { background: #0d6efd; color: white; }
+.btn-file { background: #6c757d; color: white; }
+
+.flujo-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding-bottom: 10px; /* 🔥 espacio abajo */
+}
+
+#paso1, #paso2, #formulario {
+    display: flex;
+    flex-direction: column;
+}
+
+.flujo-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.flujo-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+#paso2 {
+    max-height: none;   /* 🔥 quita límite */
+    overflow-y: visible; /* 🔥 sin scroll */
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+<div class="header">
+<img src="/img/logo.png" style="width:95px;">
+</div>
+
+<div class="chat" id="chatBox">
+
+<% if (!chat_id) { %>
+<div class="msg sistema">👋 Bienvenido a SICO'S Chat</div>
+<% } %>
+
+<% mensajes.forEach(m => { %>
+<div class="msg <%= m.emisor %>">
+
+<% if (/\.(jpg|png|jpeg|gif)$/i.test(m.mensaje)) { %>
+<img src="<%= m.mensaje %>" style="max-width:150px;cursor:pointer;" onclick="verImagen('<%= m.mensaje %>')">
+<% } else { %>
+<%= m.mensaje %>
+<% } %>
+
+</div>
+<% }) %>
+
+<!-- 🔥 AQUÍ VA EL FLUJO (DENTRO DEL CHAT) -->
+<% if (!chat_id) { %>
+
+<div id="flujo" class="flujo-container">
+
+<div id="paso1" style="display:flex;flex-direction:column;gap:8px;">
+
+<div class="msg sistema">Seleccione un servicio:</div>
+
+<button style="background:#0d6efd;color:white;border:none;border-radius:10px;padding:10px;"
+onclick="selectDepto('soporte')">Soporte Tecnico</button>
+
+<button style="background:#0d6efd;color:white;border:none;border-radius:10px;padding:10px;"
+onclick="selectDepto('servicios')">Servicios Múltiples</button>
+
+<button style="background:#0d6efd;color:white;border:none;border-radius:10px;padding:10px;"
+onclick="selectDepto('gerencia')">Gerencia</button>
+
+</div>
+
+<div id="paso2" style="display:none;flex-direction:column;gap:8px;"></div>
+
+<div id="formulario" style="display:none;flex-direction:column;gap:8px;">
+<div class="msg sistema">Ingrese sus datos:</div>
+
+<input id="nombre" class="flujo-input" placeholder="Nombre">
+<input id="detalle" class="flujo-input" placeholder="Detalle">
+
+<button style="background:#0d6efd;color:white;border:none;border-radius:10px;padding:10px;"
+onclick="crearTicket()">Enviar</button>
+
+</div>
+
+</div>
+
+<% } %>
+
+</div> <!-- 🔥 cierre correcto del chat -->
+
+<% if (chat_id) { %>
+
+<div class="input-area">
+<div class="input-row">
+
+<form id="formMensaje" style="display:flex;flex:1;gap:5px;">
+<input type="hidden" name="chat_id" value="<%= chat_id %>">
+
+<input class="input-text" type="text" name="mensaje" required>
+
+<button class="btn-circle btn-send">➤</button>
+</form>
+
+<label class="btn-circle btn-file">
+📁
+<input type="file" id="fileInput" hidden>
+</label>
+
+</div>
+</div>
+<!-- BOTÓN REAL FUNCIONAL -->
+<div style="text-align:center; padding:10px;">
+    <button type="button" onclick="volverInicio()"
+        style="width:90%; padding:10px; border:none; border-radius:10px; background:#111; color:white; cursor:pointer;">
+         Volver a inicio
+    </button>
+</div>
+<% } %>
+
+</div>
+
+<!-- VISOR -->
+<div id="visor" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999;
+">
+
+<div onclick="cerrarVisor()" style="
+position:absolute;
+top:20px;
+right:25px;
+font-size:30px;
+color:white;
+cursor:pointer;">✖</div>
+
+<a id="descargarImg" style="
+position:absolute;
+top:20px;
+left:25px;
+color:white;
+background:#0d6efd;
+padding:8px;
+border-radius:6px;
+cursor:pointer;">
+Descargar
+</a>
+
+<img id="imgGrande" style="max-width:90%; max-height:90%;">
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+const socket = io();
+const chatBox = document.getElementById("chatBox");
+const chatId = "<%= chat_id %>";
+
+if(chatId && chatId !== "null"){
+    socket.emit("joinChat", chatId);
+}
+
+// 🔥 ENVIAR MENSAJE
+const form = document.getElementById("formMensaje");
+if(form){
+form.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+
+    const mensaje = form.mensaje.value;
+
+    await fetch("/mensaje",{
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded"},
+        body:`mensaje=${encodeURIComponent(mensaje)}&chat_id=${chatId}`
+    });
+
+    form.mensaje.value="";
+});
+}
+
+// 🔥 RECIBIR MENSAJES
+socket.on("nuevoMensaje",(data)=>{
+
+    if(String(data.chat_id) !== String(chatId)) return;
+
+    const div = document.createElement("div");
+    div.className = "msg " + data.emisor;
+
+    if (data.mensaje && /\.(jpg|png|jpeg|gif)$/i.test(data.mensaje)) {
+        div.innerHTML = `<img src="${data.mensaje}" style="max-width:150px;cursor:pointer;" onclick="verImagen('${data.mensaje}')">`;
+    } else {
+        div.innerText = data.mensaje;
+    }
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+// 🔥 SUBIR IMAGEN
+document.getElementById("fileInput")?.addEventListener("change", async function(){
+
+    const file = this.files[0];
+    if(!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "chat_upload");
+
+    const res = await fetch("https://api.cloudinary.com/v1_1/dv0wcnt9p/image/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if(!data.secure_url){
+        alert("Error subiendo imagen");
+        return;
+    }
+
+    await fetch("/mensaje",{
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded"},
+        body:`mensaje=${encodeURIComponent(data.secure_url)}&chat_id=${chatId}`
+    });
+
+    this.value = "";
+});
+
+// 🔥 VISOR
+function verImagen(src){
+    document.getElementById("visor").style.display="flex";
+    document.getElementById("imgGrande").src=src;
+    document.getElementById("descargarImg").setAttribute("data-url", src);
+}
+
+function cerrarVisor(){
+    document.getElementById("visor").style.display="none";
+}
+
+// 🔥 DESCARGA
+document.getElementById("descargarImg").addEventListener("click", async function(){
+
+    const url = this.getAttribute("data-url");
+    if(!url) return;
+
+    const res = await fetch(url);
+    const blob = await res.blob();
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "imagen.jpg";
+    a.click();
+});
+let depto = "";
+let opcion = "";
+let subopcion = "";
+
+function selectDepto(d){
+    depto = d;
+    document.getElementById("paso1").style.display="none";
+
+    let opciones = [];
+
+    if(d === "soporte"){
+        opciones = [
+            "Problemas laptop",
+            "Cotización repuestos",
+            "Estado de reparación",
+            "Impresora",
+            "CPU",
+            "Monitor",
+            "UPS",
+            "Otros"
+        ];
+    }
+
+    if(d === "servicios"){
+        opciones = [
+            "Copias",
+            "Curriculum",
+            "Carnet",
+            "Redactar",
+            "Presentación",
+            "Editar",
+            "Imprimir",
+            "Escanear",
+            "CD",
+            "PVC",
+            "Música",
+            "Otros"
+        ];
+    }
+
+    if(d === "gerencia"){
+        document.getElementById("paso2").innerHTML = `
+        <button class="flujo-btn" onclick="selectSub('ventas')">Ventas</button>
+        <button class="flujo-btn" onclick="selectSub('visas')">Visas</button>
+        `;
+        document.getElementById("paso2").style.display="flex";
+        return;
+    }
+
+    document.getElementById("paso2").innerHTML =
+       document.getElementById("paso2").innerHTML =
+       opciones.map(o=>`<button class="flujo-btn" onclick="selectOpcion(this.innerText)">${o}</button>`).join("");
+
+    document.getElementById("paso2").style.display="block";
+}
+
+function selectSub(s){
+    subopcion = s;
+
+    let opciones = s === "ventas"
+        ? ["Consulta producto","Disponibilidad","Compra","Otros"]
+        : ["Trámite visa","Información proceso","Otros"];
+
+    document.getElementById("paso2").innerHTML =
+        document.getElementById("paso2").innerHTML =
+        document.getElementById("paso2").innerHTML =
+        opciones.map(o=>`<button class="flujo-btn" onclick="selectOpcion(this.innerText)">${o}</button>`).join("");
+}
+
+function selectOpcion(o){
+    opcion = o;
+    document.getElementById("paso2").style.display="none";
+    document.getElementById("formulario").style.display="block";
+}
+
+async function crearTicket(){
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const detalle = document.getElementById("detalle").value.trim();
+
+    // 🔥 ARMAR TODO EL FLUJO
+    const mensajeCompleto = [
+        depto,
+        opcion,
+        subopcion,
+        nombre,
+        detalle
+    ]
+    .filter(x => x && x !== "") // elimina vacíos
+    .join("\n"); // 🔥 salto de línea REAL
+
+    const res = await fetch("/mensaje",{
+        method:"POST",
+        headers:{ "Content-Type":"application/x-www-form-urlencoded"},
+       body:`mensaje=${encodeURIComponent(
+    nombre + " - " + detalle
+)}&depto=${depto}`
+    });
+
+    window.location.href = res.url;
+}
+function volverInicio() {
+    window.location.href = "/?chat_id=";
+}
+</script>
+
+</body>
+</html>

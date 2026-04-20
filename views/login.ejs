@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0d6efd,#0a58ca);
+height:100dvh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.login-box{
+background:white;
+width:100%;
+max-width:420px;
+height:100dvh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+padding:25px;
+box-sizing:border-box;
+}
+
+@media(min-width:768px){
+.login-box{
+height:540px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:20px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:8px;
+border:none;
+border-radius:20px;
+background:#0d6efd;
+color:white;
+cursor:pointer;
+}
+
+.error{
+color:red;
+font-size:12px;
+margin-top:10px;
+min-height:18px;
+}
+
+.header-login{
+display:flex;
+flex-direction:column;
+align-items:center;
+margin-bottom:20px;
+}
+
+.header-login img{
+width:90px;
+margin-bottom:10px;
+}
+
+.nuevo{
+background:#198754;
+color:white;
+text-decoration:none;   /* quita la línea */
+display:block;
+text-align:center;
+padding:12px;
+border-radius:20px;
+margin-top:10px;
+font-family:Arial;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+<div class="header-login">
+<img src="/img/logo.png">
+<h3>Acceder</h3>
+</div>
+
+<form action="/empleado/login" method="POST">
+
+<input type="hidden" name="deptoSeleccionado" id="depto">
+
+<input type="text" name="username" placeholder="Usuario" required>
+<input type="password" name="password" placeholder="Contraseña" required>
+
+<div class="error">
+    <%= error || '' %>
+</div>
+
+<button type="submit" onclick="setDepto('servicios')">Servicios</button>
+<button type="submit" onclick="setDepto('soporte')">Soporte</button>
+<button type="submit" onclick="setDepto('gerencia')">Gerencia</button>
+
+</form>
+
+<a href="/empleado/usuarios/nuevo2" class="nuevo">
+    Nuevo Usuario
+</a>
+</div>
+
+<script>
+function setDepto(valor){
+    document.getElementById('depto').value = valor;
+}
+</script>
+
+</body>
+</html>
+
