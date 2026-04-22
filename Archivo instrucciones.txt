@@ -1,0 +1,25 @@
+INSTRUCCIONES SISTEMA (DESARROLLO)
+
+SISTEMA SICO'S CHAT
+
+1. CLIENTES:
+
+* Escanear QR o abrir "Chat Clientes"
+
+2. EMPLEADOS:
+
+* Abrir "Panel Empleados"
+* Usuario: delmy / elias / juanpablo
+* Contraseña: según asignación
+
+3. FUNCIONAMIENTO:
+
+* El cliente escribe desde el chat
+* El empleado responde en tiempo real
+
+4. REQUISITOS:
+
+* Internet
+* Navegador web (Chrome recomendado)
+
+Sistema desarrollado por: Clara Ordoñez

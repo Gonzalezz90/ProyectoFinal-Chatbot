@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Nuevo Usuario</title>
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#0d6efd,#0a58ca);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+width:320px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+border-radius:8px;
+background:#0d6efd;
+color:white;
+cursor:pointer;
+margin-top:5px;
+}
+
+.msg{
+margin:10px 0;
+font-size:14px;
+font-weight:bold;
+color:#0d6efd;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Nuevo Usuario</h2>
+
+<!-- 🔥 MENSAJE (UNA SOLA VEZ Y SEGURO) -->
+<% if (typeof mensaje !== 'undefined' && mensaje) { %>
+<div class="msg"><%= mensaje %></div>
+<% } %>
+
+<!-- 🔥 FORM CREAR USUARIO -->
+<form action="/empleado/usuarios/guardar" method="POST">
+
+<input type="text" name="username" placeholder="Usuario" required>
+
+<input type="password" name="password" placeholder="Contraseña (4 dígitos)" required>
+
+<select name="departamento">
+<option value="servicios">Servicios</option>
+<option value="soporte">Soporte</option>
+<option value="gerencia">Gerencia</option>
+</select>
+
+<button type="submit">Guardar</button>
+
+</form>
+
+<hr style="margin:15px 0;">
+
+<h3>Eliminar Usuario</h3>
+
+<!-- 🔥 FORM ELIMINAR -->
+<form action="/empleado/usuarios/eliminar" method="POST">
+
+<input type="text" name="username" placeholder="Usuario a eliminar" required>
+
+<button type="submit" style="background:red;">Eliminar</button>
+
+</form>
+
+<!-- 🔙 BOTÓN LOGIN -->
+<button onclick="location.href='/empleado/login'">
+Volver al Login
+</button>
+
+</div>
+
+</body>
+</html>
