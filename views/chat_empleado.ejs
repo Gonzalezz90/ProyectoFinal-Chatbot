@@ -442,7 +442,7 @@ if(String(data.chat_id) === String(chatActual)){
 
         nuevaFila.innerHTML = `
             <td>${String(data.chat_id).padStart(5,'0')}</td>
-            <td>Cliente</td>
+           <td>${data.mensaje.split(' - ')[1] || "Cliente"}</td>
             <td><%= depto %></td>
             <td>
                 <button class="btn btn-abrir"
