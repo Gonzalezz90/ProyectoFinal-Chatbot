@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 app.post('/empleado/login', (req, res) => {
     const { username, password, deptoSeleccionado } = req.body;
 
-    const sql = "SELECT * FROM empleados WHERE username = ? AND password = ? AND departamento = ?";
+    const sql = "SELECT * FROM usuarios WHERE username = ? AND password = ? AND departamento = ?";
 
     db.query(sql, [username, password, deptoSeleccionado], (err, results) => {
         if (err) return res.send("Error en servidor");
