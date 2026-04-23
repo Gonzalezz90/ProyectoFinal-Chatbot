@@ -17,15 +17,22 @@ app.get('/', (req, res) => {
 
 // 👉 MISMA RUTA que ya tienes en el form (NO CAMBIAR)
 app.post('/empleado/login', (req, res) => {
-    const { username, password, deptoSeleccionado } = req.body;
+    const { username, password } = req.body;
 
-    const sql = "SELECT * FROM usuarios WHERE username = ? AND password = ? AND LOWER(departamento) = LOWER(?)";
+    const sql = "SELECT * FROM usuarios WHERE username = ? AND password = ?";
 
-    db.query(sql, [username, password, deptoSeleccionado], (err, results) => {
+    db.query(sql, [username, password], (err, results) => {
         if (err) return res.send("Error en servidor");
 
         if (results.length > 0) {
-            res.redirect('/dashboard');
+            const user = results[0];
+
+            if (user.rol === 'admin') {
+                res.redirect('/dashboard');
+            } else {
+                res.render('login', { error: 'No es admin' });
+            }
+
         } else {
             res.render('login', { error: 'Datos incorrectos' });
         }
